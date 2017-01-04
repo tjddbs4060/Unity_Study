@@ -7,20 +7,26 @@ public class Enemy_Move : MonoBehaviour {
 
     public GameObject Missile_e;
 
-    private const float Move_Speed = 4.0f;
-    private const float Cooltime_e = 2.0f;
-    private float Delay_e = 2.0f;
+    private float Cooltime_e;
+    private float Move_Speed;
+    private float Delay_e;
 
     // Use this for initialization
     void Start () {
-		
-	}
+        Set_Init();
+    }
+
+    private void Set_Init()
+    {
+        Move_Speed = Random.Range(3.0f, 7.0f);
+        Delay_e = Cooltime_e = Random.Range(0.5f, 3.0f);
+    }
 
     //Enemy CoolTime
     private void CoolTime()
     {
         Delay_e += Time.deltaTime;
-
+        
         if (Delay_e >= Cooltime_e)
         {
             Delay_e = 0;

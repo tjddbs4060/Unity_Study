@@ -220,3 +220,13 @@ public class Player_Move : MonoBehaviour {
 
     }
 }
+
+
+/*
+ * 스크립트 컴포넌트 가져오는 방법.
+    docs.unity3d.com/kr/current/ScriptReference/Component.GetComponent.html
+GameObject obj = GameObject.Instantiate(missile);
+Done_Mover mover = obj.GetComponent<Done_Mover>();
+mover.speed = -10;
+
+*/
