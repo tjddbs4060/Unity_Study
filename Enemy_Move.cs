@@ -9,6 +9,7 @@ public class Enemy_Move : MonoBehaviour {
 
     private float Cooltime_e;
     private float Move_Speed;
+    private float Missile_Speed;
     private float Delay_e;
 
     // Use this for initialization
@@ -20,6 +21,7 @@ public class Enemy_Move : MonoBehaviour {
     {
         Move_Speed = Random.Range(3.0f, 7.0f);
         Delay_e = Cooltime_e = Random.Range(0.5f, 3.0f);
+        Missile_Speed = Random.Range(-30.0f, -10.0f);
     }
 
     //Enemy CoolTime
@@ -58,6 +60,9 @@ public class Enemy_Move : MonoBehaviour {
     private void Add_Enemy_Missile()
     {
         GameObject obj = (GameObject)Instantiate(Missile_e);
+
+        Done_Mover mover = obj.GetComponent<Done_Mover>();
+        mover.speed = Missile_Speed;
 
         obj.SetActive(true);
         obj.transform.position = transform.position;
