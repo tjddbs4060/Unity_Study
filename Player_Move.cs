@@ -5,16 +5,16 @@ using UnityEngine;
 public class Player_Move : MonoBehaviour {
     List<GameObject> List_Missile_p = new List<GameObject>();
     List<GameObject> List_Enemy = new List<GameObject>();
-    List<GameObject> List_Missile_e = new List<GameObject>();
-    List<float> List_Missile_e_cooltime = new List<float>();
+    //List<GameObject> List_Missile_e = new List<GameObject>();
+    //List<float> List_Missile_e_cooltime = new List<float>();
 
     public GameObject Player;
     public GameObject Missile_p;
     public GameObject Enemy;
-    public GameObject Missile_e;
+    //public GameObject Missile_e;
 
     private const float Cooltime_p = 1.0f;
-    private const float Cooltime_e = 2.0f;
+    //private const float Cooltime_e = 2.0f;
     private const float Player_Speed = 5.0f;
     private float Delay_p = 1.0f;
 	// Use this for initialization
@@ -36,12 +36,16 @@ public class Player_Move : MonoBehaviour {
     }
     */
     
+    /*
+    //Enemy Move
     private void Enemy_Move()
     {
         for (int i = 0; i < List_Enemy.Count; i++)
             List_Enemy[i].transform.position += Vector3.back * 0.1f;
     }
+    */
 
+    //Player & Enumy Attack CoolTime
     private void CoolTime()
     {
         //Invoke("CoolTime", 0.01f);
@@ -50,6 +54,7 @@ public class Player_Move : MonoBehaviour {
             Delay_p = Cooltime_p;
 
         //Enemy CoolTime
+        /*
         for (int i = 0; i < List_Missile_e_cooltime.Count; i++)
         {
             if (List_Missile_e_cooltime[i] >= Cooltime_e)
@@ -60,10 +65,12 @@ public class Player_Move : MonoBehaviour {
 
             List_Missile_e_cooltime[i] += Time.deltaTime;
         }
-
+        */
         Delay_p += Time.deltaTime;
     }
 
+    //Add Enemy's Missile Create
+    /*
     private void Add_Enemy_Missile(Vector3 pos_Enemy)
     {
         GameObject obj = (GameObject)Instantiate(Missile_e);
@@ -73,7 +80,8 @@ public class Player_Move : MonoBehaviour {
 
         List_Missile_e.Add(obj);
     }
-
+    */
+    //Add Enemy Create
     private void Add_Enemy_Create()
     {
         Invoke("Add_Enemy_Create", 1.0f);
@@ -85,7 +93,7 @@ public class Player_Move : MonoBehaviour {
         obj.transform.position = new Vector3(posX, 0, 10);
 
         List_Enemy.Add(obj);
-        List_Missile_e_cooltime.Add(Cooltime_e);
+        //List_Missile_e_cooltime.Add(Cooltime_e);
     }
 
     private void Delete_Obj(List<GameObject> obj, List<GameObject> del)
@@ -99,6 +107,7 @@ public class Player_Move : MonoBehaviour {
         del.Clear();
     }
 
+    //Delete Player & Enemy's Missile & Enemy
     private void Delete_Missile()
     {
         List<GameObject> deleteList = new List<GameObject>();
@@ -112,6 +121,7 @@ public class Player_Move : MonoBehaviour {
 
         Delete_Obj(List_Missile_p, deleteList);
 
+        /*
         foreach (GameObject obj in List_Missile_e)
         {
             if (obj.transform.position.z < -12)
@@ -119,13 +129,14 @@ public class Player_Move : MonoBehaviour {
         }
 
         Delete_Obj(List_Missile_e, deleteList);
+        */
 
         foreach (GameObject obj in List_Enemy)
         {
             if (obj.transform.position.z < -13)
             {
                 deleteList.Add(obj);
-                List_Missile_e_cooltime.RemoveAt(count);
+                //List_Missile_e_cooltime.RemoveAt(count);
             }
             count++;
         }
@@ -165,6 +176,7 @@ public class Player_Move : MonoBehaviour {
 
     }
 
+    //Add Player Attack
     private void Add_Missile()
     {
         if (Delay_p < 1.0f)
@@ -180,6 +192,7 @@ public class Player_Move : MonoBehaviour {
         Delay_p = 0;
     }
 
+    //Player Move
     private void Air_Move(float value)
     {
         Player.transform.position += Vector3.right * Time.deltaTime * value;
@@ -193,7 +206,7 @@ public class Player_Move : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         Delete_Missile();
-        Enemy_Move();
+        //Enemy_Move();
         CoolTime();
 
         if (Input.GetKey(KeyCode.LeftArrow))
