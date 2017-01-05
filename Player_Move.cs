@@ -3,26 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Player_Move : MonoBehaviour {
-    List<GameObject> List_Missile_p = new List<GameObject>();
-    List<GameObject> List_Enemy = new List<GameObject>();
+    //List<GameObject> List_Missile_p = new List<GameObject>();
+    //List<GameObject> List_Enemy = new List<GameObject>();
     //List<GameObject> List_Missile_e = new List<GameObject>();
     //List<float> List_Missile_e_cooltime = new List<float>();
 
-    public GameObject Player;
+    //public GameObject Player;
     public GameObject Missile_p;
-    public GameObject Enemy;
+    public GameObject Explosion;
+    //public GameObject Enemy;
     //public GameObject Missile_e;
 
     private const float Cooltime_p = 1.0f;
     //private const float Cooltime_e = 2.0f;
     private const float Player_Speed = 5.0f;
+    private Vector3 First_location;
     private float Delay_p = 1.0f;
 	// Use this for initialization
 	void Start () {
-        Invoke("Add_Enemy_Create", 1.0f);
+        //Invoke("Add_Enemy_Create", 1.0f);
         //Invoke("CoolTime", 0.01f);
         //StartCoroutine("CreateEnemy");
         //StartCoroutine("CreateEnemy", 1.0f);//변수
+        First_location = gameObject.transform.position;
     }
     /*
     public IEnumerator CreateEnemy()    //코르틴
@@ -35,7 +38,7 @@ public class Player_Move : MonoBehaviour {
         }
     }
     */
-    
+
     /*
     //Enemy Move
     private void Enemy_Move()
@@ -44,6 +47,31 @@ public class Player_Move : MonoBehaviour {
             List_Enemy[i].transform.position += Vector3.back * 0.1f;
     }
     */
+
+    private void Destroy_Player()
+    {
+        GameObject obj = (GameObject)Instantiate(Explosion);
+        obj.transform.position = transform.position;
+    }
+
+    //Collision
+    private void OnCollisionEnter(Collision collision)
+    {
+        switch(collision.gameObject.tag)
+        {
+            case "Enemy_Bullet" :
+                collision.gameObject.SetActive(false);
+                gameObject.SetActive(false);
+
+                Destroy_Player();
+                break;
+            case "Enemy":
+                gameObject.SetActive(false);
+
+                Destroy_Player();
+                break;
+        }
+    }
 
     //Player & Enumy Attack CoolTime
     private void CoolTime()
@@ -82,6 +110,7 @@ public class Player_Move : MonoBehaviour {
     }
     */
     //Add Enemy Create
+    /*
     private void Add_Enemy_Create()
     {
         Invoke("Add_Enemy_Create", 1.0f);
@@ -95,7 +124,7 @@ public class Player_Move : MonoBehaviour {
         List_Enemy.Add(obj);
         //List_Missile_e_cooltime.Add(Cooltime_e);
     }
-
+    */
     private void Delete_Obj(List<GameObject> obj, List<GameObject> del)
     {
         foreach (GameObject i in del)
@@ -108,20 +137,21 @@ public class Player_Move : MonoBehaviour {
     }
 
     //Delete Player & Enemy's Missile & Enemy
+    /*
     private void Delete_Missile()
     {
         List<GameObject> deleteList = new List<GameObject>();
-        int count = 0;
+        //int count = 0;
 
         foreach (GameObject obj in List_Missile_p)
         {
-            if (obj.transform.position.z > 12)
+            if (obj.transform.position.z > 13)
                 deleteList.Add(obj);
         }
 
         Delete_Obj(List_Missile_p, deleteList);
 
-        /*
+        
         foreach (GameObject obj in List_Missile_e)
         {
             if (obj.transform.position.z < -12)
@@ -129,8 +159,8 @@ public class Player_Move : MonoBehaviour {
         }
 
         Delete_Obj(List_Missile_e, deleteList);
-        */
-
+        
+        
         foreach (GameObject obj in List_Enemy)
         {
             if (obj.transform.position.z < -13)
@@ -142,8 +172,8 @@ public class Player_Move : MonoBehaviour {
         }
 
         Delete_Obj(List_Enemy, deleteList);
-
-        /*
+        
+        
         for (int i = 0; i < List_Missile_p.Count; i++)
         {
             if (List_Missile_p[i].transform.position.z > 12)
@@ -172,9 +202,8 @@ public class Player_Move : MonoBehaviour {
                 List_Missile_e_cooltime.RemoveAt(i);
             }
         }
-        */
-
     }
+    */
 
     //Add Player Attack
     private void Add_Missile()
@@ -185,39 +214,55 @@ public class Player_Move : MonoBehaviour {
         GameObject obj = (GameObject)Instantiate(Missile_p);
 
         obj.SetActive(true);
-        obj.transform.position = Player.transform.position;
+        obj.transform.position = transform.position;
 
-        List_Missile_p.Add(obj);
+        //List_Missile_p.Add(obj);
 
         Delay_p = 0;
     }
 
     //Player Move
-    private void Air_Move(float value)
+    private void Air_Move_LR(float value)
     {
-        Player.transform.position += Vector3.right * Time.deltaTime * value;
+        transform.position += Vector3.right * Time.deltaTime * value;
 
-        if (Player.transform.position.x < -7)
-            Player.transform.position -= Vector3.right * Time.deltaTime * value;
-        else if (Player.transform.position.x > 7)
-            Player.transform.position -= Vector3.right * Time.deltaTime * value;
+        if (transform.position.x < -7)
+            transform.position -= Vector3.right * Time.deltaTime * value;
+        else if (transform.position.x > 7)
+            transform.position -= Vector3.right * Time.deltaTime * value;
     }
 
-	// Update is called once per frame
-	void Update () {
-        Delete_Missile();
+    //Player Move
+    private void Air_Move_UD(float value)
+    {
+        transform.position += Vector3.forward * Time.deltaTime * value;
+
+        if (transform.position.z <= -10)
+            transform.position -= Vector3.forward * Time.deltaTime * value;
+        else if (transform.position.z >= 10)
+            transform.position -= Vector3.forward * Time.deltaTime * value;
+    }
+
+    // Update is called once per frame
+    void Update () {
+        //Delete_Missile();
         //Enemy_Move();
         CoolTime();
 
         if (Input.GetKey(KeyCode.LeftArrow))
-            Air_Move(-Player_Speed);
+            Air_Move_LR(-Player_Speed);
 
         if (Input.GetKey(KeyCode.RightArrow))
-            Air_Move(Player_Speed);
+            Air_Move_LR(Player_Speed);
+
+        if (Input.GetKey(KeyCode.UpArrow))
+            Air_Move_UD(Player_Speed);
+
+        if (Input.GetKey(KeyCode.DownArrow))
+            Air_Move_UD(-Player_Speed);
 
         if (Input.GetKey(KeyCode.Space))
             Add_Missile();
-
     }
 }
 
