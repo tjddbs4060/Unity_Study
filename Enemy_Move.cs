@@ -1,10 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Enemy_Move : MonoBehaviour {
     //List<GameObject> List_Missile_e = new List<GameObject>();
-
     public GameObject Missile_e;
     public GameObject Explosion;
 
@@ -57,7 +57,14 @@ public class Enemy_Move : MonoBehaviour {
 
                 deleteList.Clear();
                 */
-                collision.gameObject.SetActive(false);
+                string score = GameObject.Find("ScoreText").transform.FindChild("Score").GetComponent<Text>().text;
+                int score_result = int.Parse(score) + 1;
+
+                score = score_result.ToString();
+
+                GameObject.Find("ScoreText").transform.FindChild("Score").GetComponent<Text>().text = score;
+
+                Destroy(collision.gameObject);
                 Destroy(gameObject);
 
                 break;
@@ -98,6 +105,7 @@ public class Enemy_Move : MonoBehaviour {
         Done_Mover mover = obj.GetComponent<Done_Mover>();
         mover.speed = Missile_Speed;
 
+        obj.transform.SetParent(GameObject.Find("GameObject").transform);
         obj.SetActive(true);
         obj.transform.position = transform.position;
 

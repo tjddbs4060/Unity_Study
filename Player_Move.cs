@@ -60,13 +60,13 @@ public class Player_Move : MonoBehaviour {
         switch(collision.gameObject.tag)
         {
             case "Enemy_Bullet" :
-                collision.gameObject.SetActive(false);
-                gameObject.SetActive(false);
+                Destroy(collision.gameObject);
+                Destroy(gameObject);
 
                 Destroy_Player();
                 break;
             case "Enemy":
-                gameObject.SetActive(false);
+                Destroy(gameObject);
 
                 Destroy_Player();
                 break;
@@ -212,7 +212,8 @@ public class Player_Move : MonoBehaviour {
             return;
 
         GameObject obj = (GameObject)Instantiate(Missile_p);
-
+        
+        obj.transform.SetParent(GameObject.Find("GameObject").transform);
         obj.SetActive(true);
         obj.transform.position = transform.position;
 
