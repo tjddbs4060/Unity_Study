@@ -1,24 +1,31 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player_Move : MonoBehaviour {
     //List<GameObject> List_Missile_p = new List<GameObject>();
     //List<GameObject> List_Enemy = new List<GameObject>();
     //List<GameObject> List_Missile_e = new List<GameObject>();
     //List<float> List_Missile_e_cooltime = new List<float>();
+    List<Image> List_Boom = new List<Image>();
 
     //public GameObject Player;
     public GameObject Missile_p;
     public GameObject Explosion;
+    public Image Boom_Image;
     //public GameObject Enemy;
     //public GameObject Missile_e;
 
-    private const float Cooltime_p = 1.0f;
+    private float Cooltime_p = 1.0f;
     //private const float Cooltime_e = 2.0f;
-    private const float Player_Speed = 5.0f;
+    private float Player_Speed = 5.0f;
     private Vector3 First_location;
     private float Delay_p = 1.0f;
+
+    private int Item_S = 0;
+    private int Item_P = 1;
+    private int Item_B = 0;
 	// Use this for initialization
 	void Start () {
         //Invoke("Add_Enemy_Create", 1.0f);
@@ -48,10 +55,115 @@ public class Player_Move : MonoBehaviour {
     }
     */
 
+    private void Use_Boom()
+    {
+        if (Item_B <= 0)
+            return;
+
+        Item_B--;
+
+        List<Image> deleteList = new List<Image>();
+
+        deleteList.Add(List_Boom[List_Boom.Count - 1]);
+
+        foreach (Image img in deleteList)
+        {
+            List_Boom.Remove(img);
+            Destroy(img);
+        }
+
+        deleteList.Clear();
+
+        for (int i = 0; i < GameObject.Find("GameObject").transform.childCount; i++)
+        {
+            if (GameObject.Find("GameObject").transform.GetChild(i).gameObject.layer == 8)
+                Destroy(GameObject.Find("GameObject").transform.GetChild(i).gameObject);
+
+        }
+
+        Get_Score(10);
+    }
+
+    private void Item_Boom()
+    {
+        if (Item_B > 4)
+        {
+            Get_Score(5);
+
+            return;
+        }
+
+        Image img = (Image)Instantiate(Boom_Image);
+
+        img.transform.parent = GameObject.Find("Canvas").transform.FindChild("Top_Background").transform;
+        img.rectTransform.localPosition = new Vector3(260 - (Item_B * 20), -20, 0);
+
+        List_Boom.Add(img);
+
+        Item_B++;
+    }
+
+    private void Item_Power()
+    {
+        if (Item_P > 5)
+        {
+            Get_Score(5);
+
+            return;
+        }
+
+        Item_P++;
+    }
+
+    private void Item_Speed()
+    {
+        if (Item_S > 8)
+        {
+            Get_Score(5);
+
+            return;
+        }
+
+        Item_S++;
+    }
+
+    private void Get_Score(int num)
+    {
+        string score = GameObject.Find("ScoreText").transform.FindChild("Score").GetComponent<Text>().text;
+        int score_result = int.Parse(score) + num;
+
+        score = score_result.ToString();
+
+        GameObject.Find("ScoreText").transform.FindChild("Score").GetComponent<Text>().text = score;
+    }
+
     private void Destroy_Player()
     {
         GameObject obj = (GameObject)Instantiate(Explosion);
         obj.transform.position = transform.position;
+    }
+
+    //Trigger
+    private void OnTriggerEnter(Collider other)
+    {
+        switch (other.gameObject.tag)
+        {
+            case "Item_Speed":
+                Destroy(other.gameObject);
+
+                Item_Speed();
+                break;
+            case "Item_Power":
+                Destroy(other.gameObject);
+
+                Item_Power();
+                break;
+            case "Item_Boom":
+                Destroy(other.gameObject);
+
+                Item_Boom();
+                break;
+        }
     }
 
     //Collision
@@ -78,8 +190,8 @@ public class Player_Move : MonoBehaviour {
     {
         //Invoke("CoolTime", 0.01f);
         //Player CoolTime
-        if (Delay_p >= Cooltime_p)
-            Delay_p = Cooltime_p;
+        if (Delay_p >= (Cooltime_p - (Item_S * 0.1f)))
+            Delay_p = (Cooltime_p - (Item_S * 0.1f));
 
         //Enemy CoolTime
         /*
@@ -208,14 +320,28 @@ public class Player_Move : MonoBehaviour {
     //Add Player Attack
     private void Add_Missile()
     {
-        if (Delay_p < 1.0f)
+        if (Delay_p < Cooltime_p - (Item_S * 0.1f))
             return;
-
+        //x축 0.1f -> 사이간 거리 0.2f
+        Vector3 location = transform.position;
+        float standard = 0.1f + (Item_P * -0.1f);
+        float increse = 0.2f;
+        /*
         GameObject obj = (GameObject)Instantiate(Missile_p);
-        
+
         obj.transform.SetParent(GameObject.Find("GameObject").transform);
         obj.SetActive(true);
-        obj.transform.position = transform.position;
+        obj.transform.position = location;
+        */
+
+        for (int i = 0; i < Item_P; i++)
+        {
+            GameObject obj = (GameObject)Instantiate(Missile_p);
+
+            obj.transform.SetParent(GameObject.Find("GameObject").transform);
+            obj.SetActive(true);
+            obj.transform.position = new Vector3(location.x + standard + (increse * i), location.y, location.z);
+        }
 
         //List_Missile_p.Add(obj);
 
@@ -264,6 +390,9 @@ public class Player_Move : MonoBehaviour {
 
         if (Input.GetKey(KeyCode.Space))
             Add_Missile();
+
+        if (Input.GetKeyDown(KeyCode.B))
+            Use_Boom();
     }
 }
 

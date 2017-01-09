@@ -9,15 +9,6 @@ public class Destroy_obj : MonoBehaviour {
 		
 	}
     
-    private void OnDestroy()
-    {
-        if (Explosion != null)
-        {
-            GameObject obj = (GameObject)Instantiate(Explosion);
-            obj.transform.position = transform.position;
-        }
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
         switch (collision.gameObject.tag)
@@ -26,9 +17,22 @@ public class Destroy_obj : MonoBehaviour {
                 Destroy(collision.gameObject);
                 Destroy(gameObject);
 
+                if (Explosion != null)
+                {
+                    GameObject obj = (GameObject)Instantiate(Explosion);
+                    obj.transform.position = transform.position;
+                }
+
                 break;
             case "Player":
                 Destroy(gameObject);
+
+                if (Explosion != null)
+                {
+                    GameObject obj = (GameObject)Instantiate(Explosion);
+                    obj.transform.position = transform.position;
+                }
+
                 break;
         }
     }

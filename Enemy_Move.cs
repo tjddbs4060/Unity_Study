@@ -13,19 +13,18 @@ public class Enemy_Move : MonoBehaviour {
     private float Missile_Speed;
     private float Delay_e;
 
+    private int Move_pattern;
+    private float range;
+
     // Use this for initialization
     void Start () {
         Move_Speed = Random.Range(3.0f, 7.0f);
         Delay_e = Random.Range(0.5f, 3.0f);
         Missile_Speed = Random.Range(-30.0f, -10.0f);
+        Move_pattern = (int)(Random.Range(0.0f, 3.0f));
+        range = Random.Range(2.0f, 10.0f);
 
         Invoke("Add_Enemy_Missile", Delay_e);
-    }
-
-    private void OnDestroy()
-    {
-        GameObject obj = (GameObject)Instantiate(Explosion);
-        obj.transform.position = transform.position;
     }
 
     //Delete Self
@@ -38,6 +37,8 @@ public class Enemy_Move : MonoBehaviour {
     //Collision
     private void OnCollisionEnter(Collision collision)
     {
+        GameObject obj = (GameObject)Instantiate(Explosion);
+        
         switch (collision.gameObject.tag)
         {
             case "Player_Bullet":
@@ -64,11 +65,15 @@ public class Enemy_Move : MonoBehaviour {
 
                 GameObject.Find("ScoreText").transform.FindChild("Score").GetComponent<Text>().text = score;
 
+                obj.transform.position = transform.position;
+
                 Destroy(collision.gameObject);
                 Destroy(gameObject);
 
                 break;
             case "Player":
+                obj.transform.position = transform.position;
+
                 Destroy(gameObject);
                 break;
         }
@@ -113,9 +118,36 @@ public class Enemy_Move : MonoBehaviour {
     }
 
     //Enemy Move
+    private float move = 0.0f;
+
     private void Move_Enemy()
     {
+        move += Time.deltaTime;
+
         transform.position += Vector3.back * Time.deltaTime * Move_Speed;
+
+        Pattern();
+    }
+
+    private void Pattern()
+    {
+        float xpos = Mathf.Sin(move * Mathf.Deg2Rad * 50.0f) * range;
+        float zpos = Mathf.Cos(move * Mathf.Deg2Rad * 50.0f) * range;
+        switch (Move_pattern)
+        {
+            case 0:
+                transform.position = new Vector3(xpos, transform.position.y, transform.position.z);
+
+                break;
+            case 1:
+                transform.position = new Vector3(xpos, transform.position.y, zpos);
+
+                break;
+            case 2:
+                transform.position = new Vector3(transform.position.x, transform.position.y, zpos);
+
+                break;
+        }
     }
 
     // Update is called once per frame
